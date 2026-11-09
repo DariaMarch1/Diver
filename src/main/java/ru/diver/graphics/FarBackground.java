@@ -2,15 +2,17 @@ package ru.diver.graphics;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+
 import java.net.URL;
 
 public class FarBackground {
+
     private final Image image;
 
-    public FarBackground (String resourcePath){
+    public FarBackground (String resourcePath) {
         URL imageUrl = getClass().getResource(resourcePath);
 
-        if (imageUrl == null){
+        if (imageUrl == null) {
             throw new IllegalStateException(
                     "Не найден ресурс: " + resourcePath
             );
@@ -18,7 +20,7 @@ public class FarBackground {
 
         image = new Image(imageUrl.toExternalForm());
 
-        if (image.isError()){
+        if(image.isError()){
             throw new IllegalStateException(
                     "Не удалось загрузить изображение: " + resourcePath, image.getException()
             );
@@ -29,11 +31,11 @@ public class FarBackground {
                      double width,
                      double height)
     {
-        if (width <=0 || height <=0){
+        if (width <= 0 || height <=0) {
             return;
         }
 
-        double scale = Math.max(
+        double scale = Math.max (
                 width / image.getWidth(),
                 height / image.getHeight()
         );
@@ -41,14 +43,14 @@ public class FarBackground {
         double drawingWidth = image.getWidth() * scale;
         double drawingHeight = image.getHeight() * scale;
 
-        double x = (width - drawingWidth / 2);
+        double x = (width - drawingWidth) / 2;
 
         graphics.drawImage(
                 image,
                 x,
                 0,
-                drawingHeight,
-                drawingWidth
+                drawingWidth,
+                drawingHeight
         );
     }
 }
