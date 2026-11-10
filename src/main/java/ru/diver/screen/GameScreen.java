@@ -4,6 +4,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.StackPane;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.image.Image;
@@ -11,6 +12,8 @@ import javafx.application.Platform;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import ru.diver.game.Diver;
+
+import ru.diver.graphics.Ground;
 import ru.diver.graphics.FarBackground;
 
 import javafx.animation.AnimationTimer;
@@ -22,9 +25,17 @@ public class GameScreen extends StackPane {
     private static final long FRAME_DURATION_NANOS = 100_000_000L;
 
     private final Canvas canvas = new Canvas();
+
     private final FarBackground farBackground = new FarBackground(
             "/images/diver/idle/backgrounds/far_background.png"
     );
+
+    private final Ground ground = new Ground(
+            "/images/diver/idle/backgrounds/ground.png"
+    );
+
+    private final double groundSurfaceY;
+
     private final Image [] idleFrame = new Image[19];
     private final Image [] swimmingFrame = new Image[8];
     private Image [] currentFrames = idleFrame;
@@ -65,8 +76,14 @@ public class GameScreen extends StackPane {
             swimmingFrame[i] = new Image(imageUrl.toExternalForm());
         }
 
+        double feetRatio = findVisibleBottom(idleFrame[0])
+                /idleFrame[0].getHeight();
 
-      canvas.setManaged(false);
+        groundSurfaceY = diver.getGroundY()
+                - Diver.HEIGHT
+                + Diver.HEIGHT * feetRatio;
+
+        canvas.setManaged(false);
 
         Button backButton = new Button("Назад в меню");
         backButton.setPrefWidth(180);
@@ -164,6 +181,24 @@ public class GameScreen extends StackPane {
         });
     }
 
+    private int findVisibleBottom (Image image) {
+        for (int y = (int) image.getHeight() - 1; y >= 0; y--) {
+            for (int x = 0; x < (int) image.getWidth(); x++) {
+                double opacity = image.getPixelReader()
+                        .getColor(x, y)
+                        .getOpacity();
+
+                if (opacity > 0.1) {
+                    return y + 1;
+                }
+            }
+        }
+
+        throw new IllegalStateException(
+                "Первый кадр не видно"
+        );
+    }
+
     @Override
     protected void layoutChildren(){
         super.layoutChildren();
@@ -191,6 +226,13 @@ public class GameScreen extends StackPane {
             farBackground.draw(graphics, width, height);
 
             double scale = height / Diver.WORLD_HEIGHT;
+
+            ground.draw(
+                    graphics,
+                    width,
+                    height,
+                    groundSurfaceY * scale
+            );
 
             double diverHeight = Diver.HEIGHT * scale;
             double diverWidth = diverHeight
