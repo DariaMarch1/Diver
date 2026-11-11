@@ -9,6 +9,9 @@ public class Ground {
     private static final int SOURCE_TOP = 400;
     private final Image image;
 
+    private static final double SCROLL_SPEED = 80.0;
+    private double scrollDistance;
+
     public Ground (String resourcePath){
         URL imageUrl = getClass().getResource(resourcePath);
 
@@ -27,15 +30,20 @@ public class Ground {
         }
     }
 
+    public void update (double deltaTime) {
+        scrollDistance += SCROLL_SPEED * deltaTime;
+    }
+
     public void draw(
             GraphicsContext graphics,
             double width,
             double height,
-            double surfaceY
+            double surfaceY,
+            double scale
     ){
         double drawingHeight = height - surfaceY;
 
-        if(width <=0 || drawingHeight <=0){
+        if(width <=0 || drawingHeight <=0 || scale <=0){
             return;
         }
 
@@ -44,7 +52,9 @@ public class Ground {
         double titleWidth = image.getWidth()
                 * drawingHeight / sourceHeight;
 
-        for (double x = 0; x < width; x += titleWidth){
+        double offset = (scrollDistance * scale) % titleWidth;
+
+        for (double x = -offset; x < width; x += titleWidth){
             graphics.drawImage(
                     image,
                     0,
