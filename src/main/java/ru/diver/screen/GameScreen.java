@@ -290,6 +290,19 @@ public class GameScreen extends StackPane {
                     diverHeight
             );
 
+            graphics.save();
+            graphics.setFill(Color.WHITE);
+            graphics.setFont(Font.font(28));
+            graphics.setTextAlign(TextAlignment.RIGHT);
+
+            graphics.fillText(
+                    "Дистанция: " + (int) (ground.getDistance() / 100.0),
+                    width - 24,
+                    40
+            );
+
+            graphics.restore();
+
             if (gameOver){
                 graphics.save();
 
