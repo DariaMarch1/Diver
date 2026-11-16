@@ -71,7 +71,7 @@ public class Obstacle {
 
         boolean outsidePassage =
                 diverBounds.getMinY() < passageTop
-                || diverBounds.getMinY() > passageBottom;
+                || diverBounds.getMaxY() > passageBottom;
 
         return overlapsHorizontally && outsidePassage;
     }
